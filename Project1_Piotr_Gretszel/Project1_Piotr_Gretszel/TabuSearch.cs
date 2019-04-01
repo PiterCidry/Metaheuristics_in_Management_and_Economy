@@ -5,15 +5,16 @@ namespace Project1_Piotr_Gretszel
 {
     public class TabuSearch
     {
-        public static double Run(int maxNoIterations, double deviation, int tabuLength)
+        public static KeyValuePair<double, double> Run(int maxNoIterations, double deviation, int tabuLength)
         {
             var tabu = new List<double>();
             var max = double.MinValue;
+            var bestX = double.MinValue;
 
             for(var i = 0; i < maxNoIterations; i++)
             {
                 var x = p.Rand.NextDouble() * 3 - 1;
-
+                
                 if (tabu.Exists(z => z > x - 0.0001 && z < x + 0.0001)) continue;
                 var y = p.Function(x);
                 bool progress;
@@ -45,6 +46,7 @@ namespace Project1_Piotr_Gretszel
                 } while (progress);
 
                 if (!(y > max)) continue;
+                bestX = x;
                 max = y;
                 if(tabu.Count > tabuLength)
                 {
@@ -53,7 +55,7 @@ namespace Project1_Piotr_Gretszel
                 tabu.Add(x);
             }   
 
-            return max;
+            return new KeyValuePair<double, double>(bestX, max);
         }
     }
 }

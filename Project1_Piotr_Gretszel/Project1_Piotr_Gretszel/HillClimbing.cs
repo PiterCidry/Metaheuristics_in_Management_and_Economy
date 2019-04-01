@@ -1,12 +1,14 @@
-﻿using p = Project1_Piotr_Gretszel.Problems;
+﻿using System.Collections.Generic;
+using p = Project1_Piotr_Gretszel.Problems;
 
 namespace Project1_Piotr_Gretszel
 {
     public class HillClimbing
     {
-        public static double Run(int maxNoIterations, double deviation)
+        public static KeyValuePair<double, double> Run(int maxNoIterations, double deviation)
         {
             var max = double.MinValue;
+            var bestX = double.MinValue;
 
             for(var i = 0; i < maxNoIterations; i++)
             {
@@ -40,10 +42,11 @@ namespace Project1_Piotr_Gretszel
                     }
                 } while (progress);
 
+                bestX = y > max ? x : bestX;
                 max = y > max ? y : max;
             }
 
-            return max;
+            return new KeyValuePair<double, double>(bestX, max);
         }
     }
 }

@@ -1,0 +1,181 @@
+---
+title: "Projekt 1 - Metaheurystyki w Zarządzaniu i Ekonomii - sprawozdanie"
+author: "Piotr Gretszel"
+date: "1 kwietnia 2019"
+output: html_document
+---
+
+```{r, echo = FALSE, include = FALSE}
+### Function to optimize
+optimizer <- function(x){
+  x^(2)*sin(15*x*pi)+1
+}
+
+reverse.optimizer <- function(x){
+  -x^(2)*sin(15*x*pi)+1
+}
+
+### Function plot
+curve(optimizer, from = -1, to = 2, n = 1000, col = "red", xlab = "x", 
+      ylab = "y", main = "Optimized function plot")
+
+### Full review, Random Search, Hill Climbing, Tabu Search
+library(readxl)
+results_fr <- read_excel("CSharpResults.xlsx",
+                         sheet = "FullReview")
+results_rs <- read_excel("CSharpResults.xlsx",
+                         sheet = "RandomSearch")
+results_hc <- read_excel("CSharpResults.xlsx",
+                         sheet = "HillClimbing")
+results_ts <- read_excel("CSharpResults.xlsx",
+                         sheet = "TabuSearch")
+
+### Simulated annealing
+library(optimization)
+library(dplyr)
+library(tictoc)
+options(digits = 7)
+
+set.seed(69)
+temperatureReduction <- c(0.01, 0.02, 0.05, 0.1, 0.2, 0.3, 
+                          0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 0.95, 0.99)
+results_sa <- matrix(data = NA, nrow = length(temperatureReduction), 
+                     ncol = 4)
+tic.clearlog()
+for(i in 1:length(temperatureReduction)){
+  tic()
+  results_sa[i, 1] <- temperatureReduction[i]
+  temp <- optim_sa(fun = optimizer,
+                     start = -1,
+                     maximization = TRUE,
+                     lower = -1,
+                     upper = 2,
+                     trace = TRUE,
+                     control = list(
+                       t0 = 100,
+                       nlimit = 50,
+                       r = temperatureReduction[i]
+                     ))
+  results_sa[i, 2] <- temp$par
+  results_sa[i, 3] <- optimizer(temp$par)
+  toc(log = TRUE, quiet = TRUE)
+}
+results_sa[, 4] <- unlist(tic.log(format = TRUE))
+results_sa <- results_sa %>% as.data.frame()
+colnames(results_sa) <- c("Temp. red.", "Best X", "Best Y", "Time")
+
+### Genetic algorithm
+library(GA)
+options(digits = 7)
+set.seed(592)
+
+populationSize <- c(5, 10, 20, 30, 50, 75, 100, 200, 500, 1000)
+results_ga <- matrix(data = NA, nrow = length(populationSize), ncol = 4)
+tic.clearlog()
+for(i in 1:length(populationSize)){
+  tic()
+  results_ga[i, 1] <- populationSize[i]
+  temp <- ga(type = "real-valued",
+             fitness = optimizer,
+             min = -1,
+             max = 2,
+             nBits = 2,
+             pmutation = 0.05,
+             popSize = populationSize[i],
+             monitor = F)
+  results_ga[i, 2] <- temp@solution
+  results_ga[i, 3] <- temp@fitnessValue
+  toc(log = TRUE, quiet = TRUE)
+}
+results_ga[, 4] <- unlist(tic.log(format = TRUE))
+results_ga <- results_ga %>% as.data.frame()
+colnames(results_ga) <- c("Pop. Size", "Best X", "Best Y", "Time")
+```
+
+# Cel projektu
+Celem ćwiczenia jest zbadanie działania prostych heurystyk oraz standardowego algorytmu genetycznego dla problemu szukania ekstremum funkcji w zadanym przedziale.
+
+Postać optymalizowanej funkcji:
+
+$$
+f(x) = x^2 \cdot \sin(15 \cdot \pi \cdot x) + 1
+$$
+
+# Wykres funkcji
+
+Przedstawiono wykres badanej funkcji, z którego można szacunkowo odczytać w jakim punkcie osiąga ona swoje maksimum, które będzie szukane.
+
+```{r, echo = FALSE}
+curve(optimizer, from = -1, to = 2, n = 1000, col = "red", xlab = "x", 
+      ylab = "y", main = "Optimized function plot")
+```
+
+Łatwo zauważyć, że ekstremum globalne znajduje się około punktu o współrzędnych (1.9, 4,6).
+
+# Badanie heurystyk
+
+W tej części pracy pochylono się nad kilkoma heurystykami, które pozwalają rozwiązać zadany problem. Porównano dla nich parametry wejściowe, wyniki oraz czas działania algorytmu. Pierwsze 4 heurystyki zostały zaimplementowane w języku programowania C#, algorytm genetyczny i symulowane wyrzażanie zostało przeprowadzone przy wykorzystaniu zaimplementowanych w R bibliotek. Cały kod źródłowy programu znajduje się w repozytrorium pod linkiem: <a href="https://github.com/PiterCidry/Metaheuristics_in_Management_and_Economy">Github Piotr Gretszel</a>
+
+## Pełen przegląd
+
+Wyznaczono maksimum dla funkcji korzystając z pełnego przeglądu z dokładnością 0,000001. Wyniki prezentują się następująco:
+
+```{r, echo = FALSE}
+results_fr
+```
+
+Algorytm pełnego przeglądu wyznaczył wartość maksymalną funkcji 4.610900 w punkcie 1.900474 w czasie 1201ms.
+
+## Przeszukiwanie losowe
+
+Wyznaczono maksimum dla funkci korzystając z przeszukiwania losowego z wejściowym parametrem określającym liczbę iteracji. Wyniki prezentują się następująco:
+
+```{r, echo = FALSE}
+results_rs
+```
+
+Algorytm przeszukiwania losowego wyznaczył wartość maksymalną funkcjii 4.910900 w punkcie 1.900471 w czasie 1ms. Nastąpiło to dla 10000 iteracji. Dalsze zwiększanie liczby iteracji nie wpłynęło na wartość maksymalną funkcji a znacznie zwiększyło czas wykonywania algorytmu - aż do 1348ms dla 10000000 iteracji.
+
+## Algorytm wspinaczki
+
+Wyznaczono maksimum dla funkcji korzystając z algorytmu wspinaczki z reprezentacją rzeczywistą. Zbadano wpływ odchylenia standardowego. Przyjęto 10000 iteracji. Wyniki prezentują się następująco:
+
+```{r, echo = FALSE}
+results_hc
+```
+
+Algorytm wspinaczki wyznaczył wartość maksymalną funkcji 4.610900 w punkcie 1.900482 w czasie 10ms, dla odchylenia standardowego równego 1. Wyniki dla poszczególnych wartośći odchylenia standardowego różnią się bardzo nieznacznie. Można wysnuć wniosek, że nie wpływa ono w istotny sposób na wynik działania algorytmu. Również na czas wykonywania algorytmu odchylenie standardowe nie wpływa w istotny sposób.
+
+## Tabu Search
+
+Wyznaczono maksimum dla funkcji korzystając z algorytmu Tabu Search z reprezentacją rzeczywistą. Zbadano wpływ długości listy tabu. Przyjęto 10000 iteracji. Wyniki prezentują się następująco:
+
+```{r, echo = FALSE}
+results_ts
+```
+
+Algorytm Tabu Search wyznaczył wartość maksymalną funkcji 4.610900 w punkcie 1.900475 w czasie 14ms, dla długości listy tabu równej 5. Wyniki dla poszczególnych długości listy tabu różnią się bardzo nieznacznie. Można wysnuć wniosek, że nie wpływa ona w istotny sposób na wynik działania algorytmu. Również na czas wykonywania algorytmu długość listy tabu nie wpływa w istotny sposób.
+
+## Symulowane wyażarzanie
+
+Wyznaczono maksimum dla funkcji korzystając z algorytmu symulowanego wyżarzania z reprezentacją binarną i dokładnością 0,000001. Zbadano wpływ współczynnika schładzania. Przyjęto 50 iteracji w pętli wewnętrznej, temperaturę początkową 100. Wyniki prezentują się następująco:
+
+```{r, echo = FALSE}
+results_sa
+```
+
+Algorytm symulowanego wyżarzania wyznaczył wartość maksymalną funkcji 4.61 w punkcie 1.9 dla wielu różnych przyjętych współczynników redukcji temperatury. Czas wykonywania w najlepszym przypadu wynosił około 10ms. Generalnie można zauważyć, że im wolniej redukowana jest temperatura tym większa szansa na osiągnięcie właściwego rezultatu, niestety staje się to kosztem wydłużenia czasu działania algorytmu.
+
+## Algorytm genetyczny
+
+Wyznaczono maksimum dla funkcji korzystając z algorytmu genetycznego z reprezentacją binarną i dokładnością 0,000001. Zbadano wpływ rozmiaru populacji na skuteczność algorytmu genetycznego. Przyjęto współczynniki Pm = 0,05 i Pc = 0,8. Wyniki prezentują się następująco:
+
+```{r, echo = FALSE}
+results_ga
+```
+
+Algorytm genetyczny wyznaczył wartość maksymalną funkcji 4.6109004456175 w punkcie 1.90047381818295 w czasie 90ms dla liczności populacji równej 30. Niemniej jednak stabilnośc wyników zauważyć można dopiero od liczności równej mniej więcej 75 osobników. Łatwo zauważyć, że wraz ze wzrostem liczby osobników rośnie również czas wykonywania algorytmu.
+
+# Podsumowanie
+
+Pośród zbadanych metod wyznaczania ekstremum funkcji w zadanym przedziale zdecydowanie najlepiej wypadło przeszukiwanie losowe. Dało ono zadowalający wynik w najkrótszym czasie. Niewiele gorzej sprawowały się algorytmy wspinaczki i Tabu Search. Największą dokładnością, z całą pewnością odznaczał się pełen przegląd, niestety w tym przypadku czas wykonywania algorytmu był ponad 100 krotnie większy. Mogłoby to być przeszkodą dla bardziej złożonych problemów. Algorytmy genetyczne i symulowanego wyżarzania plasowały się pomiędzy opisanymi metodami. Wyniki ich działań są w bardzo dużym stopniu zależne od wejściowych parametrów. Z tego powodu należy sądzić, że przy realnym problemie, poświęcając więcej czasu na optymalizację parametrów wejściowych - dałyby o wiele lepsze rezultaty i mogłyby stanowić konkurencję dla prostszych metod.
