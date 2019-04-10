@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
-using p = Project1_Piotr_Gretszel.Problems;
+using p = ProjectFunOpt.Problems;
 
-namespace Project1_Piotr_Gretszel
+namespace ProjectFunOpt
 {
     public class TabuSearch
     {

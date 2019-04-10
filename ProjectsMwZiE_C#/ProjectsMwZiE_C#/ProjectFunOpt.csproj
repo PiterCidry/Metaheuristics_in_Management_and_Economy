@@ -6,8 +6,8 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{EBBFA6CD-67D7-47F3-B9D5-7D9F72B5E608}</ProjectGuid>
     <OutputType>Exe</OutputType>
-    <RootNamespace>Project1_Piotr_Gretszel</RootNamespace>
-    <AssemblyName>Project1_Piotr_Gretszel</AssemblyName>
+    <RootNamespace>ProjectFunOpt</RootNamespace>
+    <AssemblyName>ProjectFunOpt</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>

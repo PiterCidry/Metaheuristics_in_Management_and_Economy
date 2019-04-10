@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using p = Project1_Piotr_Gretszel.Problems;
+using p = ProjectFunOpt.Problems;
 
-namespace Project1_Piotr_Gretszel
+namespace ProjectFunOpt
 {
     internal class FullReview
     {

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 
-namespace Project1_Piotr_Gretszel
+namespace ProjectFunOpt
 {
     internal class Program
     {

@@ -1,9 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+# Visual Studio 15
+VisualStudioVersion = 15.0.28010.2048
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Project1_Piotr_Gretszel", "Project1_Piotr_Gretszel\Project1_Piotr_Gretszel.csproj", "{EBBFA6CD-67D7-47F3-B9D5-7D9F72B5E608}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProjectFunOpt", "Project1_Piotr_Gretszel\ProjectFunOpt.csproj", "{EBBFA6CD-67D7-47F3-B9D5-7D9F72B5E608}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProjectTSP", "ProjectTSP\ProjectTSP.csproj", "{6D119689-F9F6-4112-A0A3-A9E2017DF050}"
 EndProject

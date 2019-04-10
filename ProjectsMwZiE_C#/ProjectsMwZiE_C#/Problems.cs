@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Project1_Piotr_Gretszel
+namespace ProjectFunOpt
 {
     public static class Problems
     {
