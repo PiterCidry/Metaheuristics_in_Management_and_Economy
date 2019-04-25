@@ -3,33 +3,34 @@ using System.Collections.Generic;
 
 namespace ProjectTSP
 {
-    class GA
+    internal class Ga
     {
-        Solution[] pop;
-        Random rand;
-        Solution bestSolution;
-        int popSize;
+        private readonly Solution[] _pop;
+        private readonly Random _rand;
+        private Solution _bestSolution;
+        private readonly int _popSize;
 
-        public GA(int popSize, Random rand)
+        public Ga(int popSize, Random rand)
         {
-            pop = new Solution[popSize];
-            this.popSize = popSize;
-            this.rand = rand;
+            _pop = new Solution[popSize];
+            _popSize = popSize;
+            _rand = rand;
         }
 
-        public KeyValuePair<double, double> Run(int maxGen, double crosProb, double mutProb, double invProb = 0)
+        public KeyValuePair<double, double> Run(int maxGen, double crossProb, double mutProb, double invProb = 0)
         {
             // Initialization
-            for (var i = 0; i < popSize; i++)
+            for (var i = 0; i < _popSize; i++)
             {
-                pop[i] = new Solution(rand);
-                pop[i].Initialize();
+                _pop[i] = new Solution(_rand);
+                _pop[i].Initialize();
             }
-            // Evalutaion
+
+            // Evaluation
             var bestFitness = double.MinValue;
             var bestGen = double.MinValue;
 
-            foreach (var s in pop)
+            foreach (var s in _pop)
             {
                 s.Evaluate();
                 if (s.Fitness > bestFitness)
@@ -40,59 +41,56 @@ namespace ProjectTSP
 
             for (var gen = 1; gen < maxGen; gen++)
             {
-
-                Solution[] npop = new Solution[popSize];
+                var nPop = new Solution[_popSize];
+                
                 //Selection
-                for (int i = 0; i < popSize; i++)
+                for (var i = 0; i < _popSize; i++)
                 {
-                    int r1 = rand.Next(popSize);
+                    var r1 = _rand.Next(_popSize);
                     int r2;
                     do
                     {
-                        r2 = rand.Next(popSize);
+                        r2 = _rand.Next(_popSize);
                     } while (r1 == r2);
-                    npop[i] = pop[r1].Fitness < pop[r2].Fitness ? pop[r1].Clone() : pop[r2].Clone();
+                    nPop[i] = _pop[r1].Fitness < _pop[r2].Fitness ? _pop[r1].Clone() : _pop[r2].Clone();
                 }
 
                 //Elite
-                if (bestSolution != null)
+                if (_bestSolution != null)
                 {
-                    npop[0] = bestSolution.Clone();
+                    nPop[0] = _bestSolution.Clone();
                 }
 
-
                 //Cross
-                for (var i = 0; i < popSize - 1; i += 2)
+                for (var i = 0; i < _popSize - 1; i += 2)
                 {
-                    npop[i].Cross(npop[i + 1], crosProb);
+                    nPop[i].Cross(nPop[i + 1], crossProb);
                 }
 
                 //Inversion
-                for (var i = 0; i < popSize; i++)
+                for (var i = 0; i < _popSize; i++)
                 {
-                    npop[i].Inverse(invProb);
+                    nPop[i].Inverse(invProb);
                 }
 
                 //Mutation
-                for (var i = 0; i < popSize; i++)
+                for (var i = 0; i < _popSize; i++)
                 {
-                    npop[i].Mutate(mutProb);
+                    nPop[i].Mutate(mutProb);
                 }
 
-                foreach (Solution s in npop)
+                foreach (var s in nPop)
                 {
                     s.Evaluate();
-                    if (s.Fitness < bestFitness)
-                    {
-                        bestFitness = s.Fitness;
-                        bestGen = gen;
-                        bestSolution = s.Clone();
-                    }
+                    if (!(s.Fitness < bestFitness)) continue;
+                    bestFitness = s.Fitness;
+                    bestGen = gen;
+                    _bestSolution = s.Clone();
                 }
 
-                for (var i = 0; i < popSize; i++)
+                for (var i = 0; i < _popSize; i++)
                 {
-                    pop[i] = npop[i];
+                    _pop[i] = nPop[i];
                 }
             }
 

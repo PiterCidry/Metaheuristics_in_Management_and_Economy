@@ -2,38 +2,37 @@
 
 namespace ProjectTSP
 {
-    class Program
+    internal class Program
     {
-        static void Main(string[] args)
+        private static void Main()
         {
             var rand = new Random();
-            var problem = "TSP75.txt";
-            int[] maxGen = new int[3] { 10000, 25000, 50000 };
-            int[] popSize = new int[3] { 20, 50, 100 };
-            double[] pc = new double[3] { 0.9, 0.7, 0.5 };
-            double[] pm = new double[3] { 0.1, 0.3, 0.5 };
-            double[] pi = new double[3] { 0.05, 0.1, 0.2 };
+            const string problem = "TSP75.txt";
+            var maxGen = new[] { 10000, 25000, 50000 };
+            var popSize = new[] { 20, 50, 100 };
+            var pc = new[] { 0.9, 0.7, 0.5 };
+            var pm = new[] { 0.1, 0.3, 0.5 };
+            var pi = new[] { 0.05, 0.1, 0.2 };
 
             Problem.ReadProblem(problem);
 
             foreach (var i in maxGen)
             {
-                for (var j = 0; j < popSize.Length; j++)
+                foreach (var size in popSize)
                 {
-                    for (var k = 0; k < pc.Length; k++)
+                    foreach (var k in pc)
                     {
-                        for (var l = 0; l < pm.Length; l++)
+                        foreach (var l in pm)
                         {
-                            for (var m = 0; m < pi.Length; m++)
+                            foreach (var m in pi)
                             {
                                 Console.WriteLine($"**************************\nGenetic algorithm for {problem.Split('.')[0]} with parameters:\n" +
-                                    $"Iterations: {i}\tPopulation Size: {popSize[j]}\tPc: {pc[k]}\tPm: {pm[l]}\tPi: {pi[m]}");
+                                                  $"Iterations: {i}\tPopulation Size: {size}\tPc: {k}\tPm: {l}\tPi: {m}");
 
-                                var GA = new GA(popSize[j], rand);
-                                var result = GA.Run(i, pc[k], pm[l], pi[m]);
+                                var ga = new Ga(size, rand);
+                                ga.Run(i, k, l, m);
                                 // TODO: Writing results to .csv file!
                             }
-
                         }
                     }
                 }
