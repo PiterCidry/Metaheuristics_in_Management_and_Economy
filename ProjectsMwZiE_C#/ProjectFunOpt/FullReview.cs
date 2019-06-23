@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using p = ProjectFunOpt.Problems;
+using p = ProjectFunOpt.Problem;
 
 namespace ProjectFunOpt
 {

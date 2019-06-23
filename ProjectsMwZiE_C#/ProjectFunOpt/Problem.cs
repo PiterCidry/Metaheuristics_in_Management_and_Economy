@@ -2,7 +2,7 @@
 
 namespace ProjectFunOpt
 {
-    public static class Problems
+    public static class Problem
     {
         public static Random Rand = new Random();
 

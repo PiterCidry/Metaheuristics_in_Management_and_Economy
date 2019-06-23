@@ -8,27 +8,22 @@ namespace ProjectFunOpt
         private static void Main()
         {
             FullReviewExecute();
-            RandomSearchExecute(10);
-            RandomSearchExecute(100);
-            RandomSearchExecute(1000);
-            RandomSearchExecute(10000);
-            RandomSearchExecute(100000);
-            RandomSearchExecute(1000000);
-            RandomSearchExecute(10000000);
-            HillClimbingExecute(10000, 0.1);
-            HillClimbingExecute(10000, 0.2);
-            HillClimbingExecute(10000, 0.5);
-            HillClimbingExecute(10000, 1);
-            HillClimbingExecute(10000, 1.5);
-            HillClimbingExecute(10000, 2);
-            HillClimbingExecute(10000, 5);
-            TabuSearchExecute(10000, 1, 1);
-            TabuSearchExecute(10000, 1, 2);
-            TabuSearchExecute(10000, 1, 3);
-            TabuSearchExecute(10000, 1, 5);
-            TabuSearchExecute(10000, 1, 10);
-            TabuSearchExecute(10000, 1, 100);
-            TabuSearchExecute(10000, 1, 1000);
+            foreach(var i in new[]{10, 100, 1000, 10000, 100000, 1000000, 10000000})
+            {
+                RandomSearchExecute(i);
+            }
+            foreach (var i in new[] { 0.1, 0.2, 0.5, 1, 1.5, 2, 5})
+            {
+                HillClimbingExecute(10000, i);
+            }
+            foreach (var i in new[] {1, 2, 3, 5, 10, 100, 1000})
+            {
+                TabuSearchExecute(1000, 1, i);
+            }
+            foreach (var i in new[] {10, 20, 30, 50, 100})
+            {
+                GaExecute(i, 10000, 0.8, 0.05);
+            }
             Console.WriteLine("Press any key to continue...");
             Console.ReadKey();
         }
@@ -81,6 +76,19 @@ namespace ProjectFunOpt
             s.Stop();
             Console.WriteLine($"Elapsed time: {s.ElapsedMilliseconds}ms\nBest X: {result.Key}\tBest Y: {result.Value}\n");
             Console.WriteLine($"****************************\nEnd of {nameof(TabuSearchExecute)}\n****************************\n");
+        }
+
+        private static void GaExecute(int popSize, int maxGen, double crossProb, double mutProb)
+        {
+            Console.WriteLine($"****************************\nStart of {nameof(GaExecute)}\n" +
+                              $"Parameter: Population size - {popSize}\n****************************\n");
+            var s = new Stopwatch();
+            var ga = new Ga(popSize);
+            s.Start();
+            var result = ga.Run(maxGen, crossProb, mutProb);
+            s.Stop();
+            Console.WriteLine($"Elapsed time: {s.ElapsedMilliseconds}ms\nBest X: {result.Key}\tBest Y: {result.Value}\n");
+            Console.WriteLine($"****************************\nEnd of {nameof(GaExecute)}\n****************************\n");
         }
     }
 }

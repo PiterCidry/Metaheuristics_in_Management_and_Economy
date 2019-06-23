@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using p = ProjectFunOpt.Problems;
+using p = ProjectFunOpt.Problem;
 
 namespace ProjectFunOpt
 {
