@@ -1,0 +1,74 @@
+---
+title: "Projekt 2 - Metaheurystyki w Zarządzaniu i Ekonomii - sprawozdanie"
+author: "Piotr Gretszel"
+date: "25 czerwca 2019"
+output: html_document
+---
+
+```{r, echo = FALSE, include = FALSE}
+GaForTspResults <- read.csv2(
+  "~/Studia/Semestr 8/MwZiE/Zadania/Metaheuristics_in_Management_and_Economy/ProjectsMwZiE_C#/ProjectTSP/GaForTspResults.csv")
+
+TSP75 <- read.table("~/Studia/Semestr 8/MwZiE/Zadania/Metaheuristics_in_Management_and_Economy/ProjectsMwZiE_R/TSP75.TXT", 
+                    quote="\"", comment.char="")
+
+colnames(TSP75) <- c("X", "Y")
+
+library(dplyr)
+library(ggplot2)
+options(scipen = 9)
+set.seed(997)
+```
+
+# Cel projektu
+
+Celem ćwiczenia jest zbadanie działania własnoręcznie zaimplementowanego algorytmu genetycznego w symetrycznym problemie komiwojażera złożonym z 75 miast. Przedstawiono współrzędne 10 pierwszych miast:
+
+```{r, echo = FALSE}
+head(TSP75, 10)
+```
+
+Najlepszym możliwym do uzyskania rezultatem dla badanego zbioru danych jest wynik **535**.
+
+# Symetryczny problem komiwojażera
+
+Nazwa pochodzi od typowej ilustracji problemu, przedstawiającej go z punktu widzenia wędrownego sprzedawcy (komiwojażera): Dane jest **n** miast, które komiwojażer ma odwiedzić, oraz odległość / cena podróży / czas podróży pomiędzy każdą parą miast. Celem jest znalezienie najkrótszej / najtańszej / najszybszej drogi łączącej wszystkie miasta, zaczynającej się i kończącej się w określonym punkcie.
+
+Problem nazywany jest symetrycznym ponieważ odległość z miasta A do miasta B jest taka sama jak z miasta B do miasta A.
+
+# Algorytm genetyczny
+
+Jest to rodzaj heurystyki, która znajduje możliwie najlepsze rozwiązanie problemu w przestrzeni alternatywnych rozwiązań. Sposób działania algorytmów genetycznych przypomina zjawisko ewolucji biologicznej. Zaliczany jest do grupy algorytmów ewolucyjnych.
+
+Przebieg algorytmu:
+
+- Losowana jest populacja początkowa
+- Populacja poddawana jest ocenie (selekcja metodą ruletki lub metody rankingowej). Najlepiej przystosowane osobniki biorą udział w procesie reprodukcji.
+- Genotypy wybranych osobników są poddawane operatorom ewolucyjnym takim jak kojarzenie poprzez złączanie genotypów rodziców (krzyżowanie), czy mutacja, czyli wprowadzenie drobnych zmian losowych.
+- Rodzi się kolejne pokolenie. Aby utrzymać stałą liczbę osobników w populacji, te najlepsze (według funkcji określającej fenotyp) są powielane, a najsłabsze usuwane. Jeżeli nie znaleziono dostatecznie dobrego rozwiązania, algorytm powraca do punktu drugiego. W przeciwnym wypadku wybierany jest najlepszy osobnik z populacji. Jego genotyp to uzyskany wynik.
+
+# Przeprowadzone badanie
+
+W badaniu pochylono się nad skutecznością zaimplementowanego algorytmu dla różnych parametrów. Wyniki zbadano pod kątem czasu wykonywania, najlepszego (najmniejszego) wyniku oraz najlepszej populacji. Algorytm został zaimplementowany w języku programowania C#. Cały kod źródłowy programu znajduje się w repozytorium pod linkiem <a href="https://github.com/PiterCidry/Metaheuristics_in_Management_and_Economy">Github Piotr Gretszel</a>
+
+Zastosowane parametry:
+
+- *Iterations* - maksymalna liczba iteracji algorytmu (10000, 25000, 50000)
+- *PopulationSize* -  rozmiar populacji (20, 50, 100)
+- *Pc* - prawdopodobieństwo zajścia krzyżowania (0.9, 0.7, 0.5)
+- *Pm* - prawdopodobieństwo zajścia mutacji (0.1, 0.3, 0.5)
+- *Pi* - prawdopodobieństwo zajścia inwersji (0.05, 0.1, 0.2)
+
+# Wyniki badania
+
+W wyniku skrzyżowania wszystkich kombinacji parametrów uzyskano ostatecznie 243 obserwacje. Zaprezentowano losowo wybrane 15 obserwacji wynikowych:
+
+```{r, echo = FALSE}
+GaForTspResults[runif(min = 1, max = 243, n = 15),]
+```
+
+HISTOGRAMY I INNE
+
+# Podsumowanie
+
+BLABLABLA FAJNE WYNIKI
