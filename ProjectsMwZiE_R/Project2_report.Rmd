@@ -16,6 +16,7 @@ colnames(TSP75) <- c("X", "Y")
 
 library(dplyr)
 library(ggplot2)
+library(ggpubr)
 options(scipen = 9)
 set.seed(997)
 ```
@@ -67,8 +68,89 @@ W wyniku skrzyżowania wszystkich kombinacji parametrów uzyskano ostatecznie 24
 GaForTspResults[runif(min = 1, max = 243, n = 15),]
 ```
 
-HISTOGRAMY I INNE
+Na wykresach pudełkowych zobrazowno kształtowanie się wyników w kategorii najlepszego dopasowania, najlepszej populacji oraz czasu trwania wykonywania algorytmu. Przedstawiono również podstawowe statystyki opisowe dla lepszego zobrazowania wykresów:
+
+```{r, echo = FALSE}
+ggarrange(
+GaForTspResults %>% ggplot(aes("", BestFitness)) + geom_boxplot(),
+GaForTspResults %>% ggplot(aes("", BestGen)) + geom_boxplot(),
+GaForTspResults %>% ggplot(aes("", ElapsedMilliseconds)) + geom_boxplot(),
+ncol = 3)
+
+summary(GaForTspResults %>% select(BestFitness, BestGen, ElapsedMilliseconds))
+```
+
+Jak widać mediana najlepszego dopasowania wynosiła 693. Kwartyl dolny około 650 a górny 761. Występowały również obserwacje odstające dla najgorszych dopasowań. Najgorsze dopasowanie wyniosło 1112.
+
+Średnia najlepszej populacji kształtowała się na poziomie 22761. Rozstęp międzykwartylowy wyniósł około 22000. Minimalna najniższa liczba populacji wyniosła około 2000 a najwyższa 50000.
+
+Średni czas wykonywania algorytmu wyniósł 37,8s. Najniższy 4s a najwyższy ponad 2 minuty.
+
+Przedstawiono histogramy dla dwóch zmiennych wynikowych, czyli dla najlepszej generacji i najlepszego dopasowania. Wnioski z nich częściowo pokrywają się z wnioskami z wykresów pudełkowych.
+
+```{r, echo = FALSE}
+ggarrange(
+GaForTspResults %>% ggplot(aes(BestGen)) + geom_histogram(bins = 20),
+GaForTspResults %>% ggplot(aes(BestFitness)) + geom_histogram(bins = 20),
+ncol = 2)
+```
+
+Warto zauważyć, że wyniki dla najlepszej generacji zebrały się w 3 skupiska. Może to być spowodowane wpływem pozostałych parametrów wejściowych, które często były złożone z 3 różnych wartości.
+
+Nie stwierdzono wyraźnej zależności pomiędzy najlepszą generacją a najlepszym dopasowaniem. Zarówno dla małych jak i dużych generacji występują dopasowania dobre i słabe. Obrazuje to następujący wykres:
+
+```{r, echo = FALSE}
+GaForTspResults %>% ggplot(aes(BestGen, BestFitness)) + geom_jitter()
+```
+
+Przedstawiono wykresy zależności pomiędzy parametrami (i zmiennymi wynikowymi) a czasem wykonywania algorytmu:
+
+```{r, echo = FALSE, warning = FALSE}
+ggarrange(
+GaForTspResults %>% ggplot(aes(Iterations, ElapsedMilliseconds)) + geom_point() + geom_smooth(),
+GaForTspResults %>% ggplot(aes(PopulationSize, ElapsedMilliseconds)) + geom_point() + geom_smooth(),
+GaForTspResults %>% ggplot(aes(Pc, ElapsedMilliseconds)) + geom_point() + geom_smooth(),
+GaForTspResults %>% ggplot(aes(Pm, ElapsedMilliseconds)) + geom_point() + geom_smooth(),
+GaForTspResults %>% ggplot(aes(Pi, ElapsedMilliseconds)) + geom_point() + geom_smooth(),
+GaForTspResults %>% ggplot(aes(BestGen, ElapsedMilliseconds)) + geom_point() + geom_smooth(),
+GaForTspResults %>% ggplot(aes(BestFitness, ElapsedMilliseconds)) + geom_point() + geom_smooth(),
+ncol = 3, nrow = 3)
+```
+
+O istotnej zależności (wydłużeniu) czasu wykonywania mówić można w przypadku zwiększania liczby iteracji, zwiększania liczności populacji. W przypadku pozostałych parametru zależność nie jest widoczna. Zauważyć można, że im większa najlepsza generacja tym z reguły dłuższy czas wykonywania algorytmu. Co ciekawe, dla najlepszych dopasowań (najniższych) czas wykonywania był istotnie dłuższy.
+
+Zobrazowano zależność pomiędzy najlepszym (najniższym) uzyskanym dopasowaniem a poszczególnymi parametrami:
+
+```{r, echo = FALSE, warning = FALSE}
+ggarrange(
+  GaForTspResults %>% ggplot(aes(Iterations, BestFitness)) + geom_point() + geom_smooth(),
+  GaForTspResults %>% ggplot(aes(PopulationSize, BestFitness)) + geom_point() + geom_smooth(),
+  GaForTspResults %>% ggplot(aes(Pc, BestFitness)) + geom_point() + geom_smooth(),
+  GaForTspResults %>% ggplot(aes(Pm, BestFitness)) + geom_point() + geom_smooth(),
+  GaForTspResults %>% ggplot(aes(Pi, BestFitness)) + geom_point() + geom_smooth(),
+  GaForTspResults %>% ggplot(aes(BestGen, BestFitness)) + geom_point() + geom_smooth(),
+  GaForTspResults %>% ggplot(aes(ElapsedMilliseconds, BestFitness)) + geom_point() + geom_smooth(),
+  ncol = 3, nrow = 3)
+```
+
+Z powyższych wykresów nie można wyciągnąć wniosku, że dla jakiegoś parametru (o pewnej wartości) uzyskany wynik był istotnie lepszy.
 
 # Podsumowanie
 
-BLABLABLA FAJNE WYNIKI
+Powyższe rozważania nie pozwoliły odpowiedzieć na pytanie, jakie powinny być parametry w algorytmie genetycznym, tak aby zmaksymalizować szansę na uzyskanie zadowalającego rezultatu w problemie symetrycznym komiwojażera. Zasugerowały one natomiast kierunek zależności pomiędzy czasem wykonywania a parametrami. Z reguły, im wyższa wartość parametrów takich jak liczba iteracji, czy liczność populacji, tym dłużej wykonywał się algorytm.
+
+Na zakończenie przedstawiono parametry, dla których w toku badania uzyskano najlepszy wynik:
+
+```{r, echo = FALSE}
+GaForTspResults[which.min(GaForTspResults$BestFitness),]
+```
+
+Najlepszy wynik **570** uzyskano dla parametrów następujących:
+
+- Liczba iteracji: 50000
+- Rozmiar populacji: 100
+- Prawdopodobieństwo krzyżowania: 90%
+- Prawdopodobieństwo mutacji: 30%
+- Prawdopodobieństwo inwersji: 5%
+
+Algorytm z takimi parametrami dał zadowalający wynik w 2013 generacji a wykonywał się ponad 2 minuty.
